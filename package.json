@@ -9,6 +9,8 @@
     "build:ledger": "node scripts/build-ledger.mjs",
     "rank:free": "node scripts/rank-free.mjs",
     "prepare:resend": "node scripts/prepare-resend.mjs",
+    "sync:resend": "node scripts/sync-resend.mjs",
+    "reconcile:resend": "node scripts/reconcile-resend.mjs",
     "backup:local": "node scripts/backup-local.mjs",
     "audit:dns": "node scripts/audit-dns.mjs",
     "validate:ledger": "node scripts/validate-ledger.mjs",
