@@ -80,13 +80,9 @@ for values in sheet.iter_rows(min_row=2, values_only=True):
     row = dict(zip(headers, values))
     source_rows.append({
         "source_document": "chargebacks.xlsx",
-        "payment_reference": row.get("charge_id_or_payment_id", ""),
-        "payment_date": row.get("created_at", ""),
-        "amount": row.get("amount", ""),
-        "currency": row.get("currency", ""),
-        "customer_name": row.get("customer_name", ""),
-        "customer_email": row.get("email", ""),
-        "description_or_dispute_status": row.get("description", "")
+        "source_customer_name": row.get("customer_name", ""),
+        "source_customer_email": row.get("email", ""),
+        "source_row": row
     })
 with open("/Users/vMac/Downloads/unified_payments.csv", newline="", encoding="utf-8-sig") as handle:
     for row in csv.DictReader(handle):
@@ -96,22 +92,30 @@ with open("/Users/vMac/Downloads/unified_payments.csv", newline="", encoding="ut
         if disputed_amount not in ("", "0", "0.0", "0.00") or dispute_date or dispute_status:
             source_rows.append({
                 "source_document": "unified_payments.csv",
-                "payment_reference": row.get("PaymentIntent ID") or row.get("id", ""),
-                "payment_date": dispute_date or row.get("Created date (UTC)", ""),
-                "amount": row.get("Disputed Amount") or row.get("Amount", ""),
-                "currency": row.get("Currency", ""),
-                "customer_name": row.get("Shipping Name") or row.get("Card Name", ""),
-                "customer_email": row.get("Customer Email", ""),
-                "description_or_dispute_status": dispute_status or row.get("Dispute Reason", "")
+                "source_customer_name": row.get("Shipping Name") or row.get("Card Name", ""),
+                "source_customer_email": row.get("Customer Email", ""),
+                "source_row": row
             })
 
-unmatched = [row for row in source_rows if not current_match(row["customer_email"], row["customer_name"]) and not historic_match(row["customer_email"], row["customer_name"])]
+unmatched = [row for row in source_rows if not current_match(row["source_customer_email"], row["source_customer_name"]) and not historic_match(row["source_customer_email"], row["source_customer_name"])]
+all_source_columns = []
+for row in source_rows:
+    for column in row["source_row"]:
+        if column not in all_source_columns:
+            all_source_columns.append(column)
 for row in unmatched:
     row["hubspot_match_result"] = "no match in current portal or historic exports after email, aliases, normalized-name, and fuzzy-name checks"
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-headers = ["source_document", "payment_reference", "payment_date", "amount", "currency", "customer_name", "customer_email", "description_or_dispute_status", "hubspot_match_result"]
+headers = ["source_document", "source_customer_name", "source_customer_email", "hubspot_match_result", *all_source_columns]
 with OUTPUT.open("w", newline="", encoding="utf-8") as handle:
     writer = csv.DictWriter(handle, fieldnames=headers)
     writer.writeheader()
-    writer.writerows(unmatched)
+    for row in unmatched:
+        writer.writerow({
+            "source_document": row["source_document"],
+            "source_customer_name": row["source_customer_name"],
+            "source_customer_email": row["source_customer_email"],
+            "hubspot_match_result": row["hubspot_match_result"],
+            **row["source_row"]
+        })
 print(json.dumps({"output": str(OUTPUT), "unmatched_payment_rows": len(unmatched)}))
