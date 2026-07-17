@@ -13,6 +13,8 @@
     "prepare:resend": "node scripts/prepare-resend.mjs",
     "sync:resend": "node scripts/sync-resend.mjs",
     "sync:hubspot-template-drafts": "node scripts/sync-hubspot-template-drafts.mjs",
+    "publish:hubspot-template-drafts": "node scripts/publish-hubspot-template-drafts.mjs",
+    "sync:full-html-template-exports": "node scripts/sync-full-html-template-exports.mjs",
     "sync:d1": "node scripts/sync-d1.mjs",
     "reconcile:resend": "node scripts/reconcile-resend.mjs",
     "campaign:preflight": "node scripts/campaign-preflight.mjs",

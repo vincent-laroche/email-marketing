@@ -11,7 +11,7 @@
 
 - D1 has the 4,290-contact canonical ledger, 4,290 consent-evidence records, and 655 suppression records. The Worker health endpoint is live.
 - The approved non-customer Free manifest `resend-free-prospects-2026-07-17T08-16-44-687Z` completed Resend import `c8424560-ff43-4b54-b47e-1903540cf79f`: 1,000 created, zero failed/skipped. Contacts are in **Free Continuity — Non-Customer 1000** and **All Marketing Eligible**, opted in to the Marketing updates topic.
-- 92 HubSpot source emails with extractable HTML are stored in Resend as unpublished draft templates. Their HubSpot IDs are preserved as `hubspot-<id>` aliases. No template has a default sender, no template is published, and no template can send by itself.
+- 104 HubSpot source emails are stored in Resend as published templates using the full HTML exports in `../hubspot-html-export/`. Their HubSpot IDs are preserved as `hubspot-<id>` aliases and every migrated template has reply-to `info@hairsolutions.co`. Templates do not send by themselves. A sender mailbox local-part under `mail.hairsolutions.co` is still required before an automation or broadcast can send.
 
 ## Implemented but deliberately gated
 
@@ -23,7 +23,7 @@
 - Pro expansion, which must wait until the Resend account is on a plan that supports the larger eligible cohort.
 - An approved sender identity and monitored reply-to inbox for outbound messages. This cannot be inferred from the sending subdomain.
 - Shopify/application event production for event-driven journeys. Resend Automations require explicit events; it cannot execute HubSpot property/list enrollment criteria directly.
-- Review/rebuild of 17 source emails held from automatic migration: two are explicitly test/do-not-reuse and 15 have no extractable HTML body in the HubSpot API snapshot.
+- Review/rebuild of five held source emails: one is explicitly test/do-not-reuse and four Launch variants have no full-HTML export.
 
 ## Completion rule
 
