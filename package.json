@@ -18,6 +18,7 @@
     "campaign:send": "node scripts/campaign-send.mjs",
     "report:campaign": "node scripts/report-campaign.mjs",
     "report:payment-associations": "node scripts/report-payment-associations.mjs",
+    "audit:recurring-plan-patterns": "node scripts/audit-recurring-plan-patterns.mjs",
     "security:scan": "node scripts/security-scan.mjs",
     "backup:local": "node scripts/backup-local.mjs",
     "audit:dns": "node scripts/audit-dns.mjs",
