@@ -1,0 +1,13 @@
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
+const root = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+const dirs = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory() && entry.name.startsWith("ledger-")).map((entry) => entry.name).sort();
+if (!dirs.length) throw new Error("No ledger found");
+const ledgerDir = path.join(root, dirs.at(-1));
+const ledger = JSON.parse(await readFile(path.join(ledgerDir, "canonical-ledger.json"), "utf8"));
+const duplicateEmails = ledger.length - new Set(ledger.map((record) => record.email)).size;
+const suppressedEligible = ledger.filter((record) => record.eligibility_status === "eligible" && record.suppression_reason);
+const historicEligible = ledger.filter((record) => record.eligibility_status === "eligible" && !record.active_portal);
+const report = { ledgerDir, contacts: ledger.length, duplicateEmails, suppressedEligible: suppressedEligible.length, historicEligible: historicEligible.length, pass: duplicateEmails === 0 && suppressedEligible.length === 0 && historicEligible.length === 0 };
+console.log(JSON.stringify(report, null, 2));
+if (!report.pass) process.exitCode = 1;

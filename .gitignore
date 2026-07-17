@@ -1,0 +1,12 @@
+node_modules/
+.env
+.dev.vars
+.wrangler/
+coverage/
+*.sqlite
+*.db
+data/
+exports/
+out/
+*.csv
+../../../../07_warehouse/email_marketing/resend_takeover/

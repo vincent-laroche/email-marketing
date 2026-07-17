@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "email-marketing-control-plane",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-07-17",
+  "observability": { "enabled": true },
+  "triggers": { "crons": ["17 4 * * *"] },
+  "d1_databases": [
+    {
+      "binding": "EMAIL_MARKETING_DB",
+      "database_name": "REPLACE_AFTER_APPROVED_D1_CREATE",
+      "database_id": "REPLACE_AFTER_APPROVED_D1_CREATE"
+    }
+  ]
+}
