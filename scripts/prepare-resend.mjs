@@ -4,20 +4,18 @@ import { sha256 } from "../src/ledger.mjs";
 
 const mode = process.argv.find((argument) => argument.startsWith("--mode="))?.split("=")[1] ?? "free";
 if (!["free", "pro"].includes(mode)) throw new Error("Use --mode=free or --mode=pro");
-const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
-const dirs = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory() && entry.name.startsWith("ledger-")).map((entry) => entry.name).sort();
-if (!dirs.length) throw new Error("No ledger found");
-const ledgerDir = path.join(root, dirs.at(-1));
+const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data/current";
+const ledgerDir = path.join(root, "ledger");
 const ledger = JSON.parse(await readFile(path.join(ledgerDir, "canonical-ledger.json"), "utf8"));
 const eligible = ledger.filter((record) => record.eligibility_status === "eligible");
-const rankingPath = path.join(ledgerDir, "free-ranking", "selected.json");
+const rankingPath = path.join(root, "free-ranking", "selected.json");
 const selected = mode === "free"
   ? JSON.parse(await readFile(rankingPath, "utf8"))
   : eligible;
 const cap = mode === "free" ? 1000 : 5000;
 if (selected.some((record) => record.suppression_reason || !record.active_portal)) throw new Error("Safety invariant failed: unsafe contact selected");
 if (selected.length > cap) throw new Error(`Contact cap exceeded for ${mode}`);
-const destination = path.join(ledgerDir, `resend-${mode}`);
+const destination = path.join(root, `${mode}-import`);
 await mkdir(destination, { recursive: true });
 const headers = ["email", "first_name", "last_name", "customer_status", "customer_tier", "lifecycle_stage", "engagement_tier", "last_meaningful_activity", "source_portals", "consent_evidence_quality", "migration_cohort"];
 const escape = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;

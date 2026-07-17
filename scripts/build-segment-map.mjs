@@ -1,10 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { latestLedgerDir } from "../src/manifests.mjs";
+import { currentRoot, latestLedgerDir } from "../src/manifests.mjs";
 
 const ledgerDir = await latestLedgerDir();
 const ledger = JSON.parse(await readFile(path.join(ledgerDir, "canonical-ledger.json"), "utf8"));
-const free = JSON.parse(await readFile(path.join(ledgerDir, "free-ranking", "selected.json"), "utf8"));
+const free = JSON.parse(await readFile(path.join(currentRoot, "free-ranking", "selected.json"), "utf8"));
 const now = Date.now();
 const daysAgo = (date, days) => date && (now - new Date(date).valueOf()) <= days * 86_400_000;
 const eligible = ledger.filter((row) => row.eligibility_status === "eligible");
@@ -31,7 +31,7 @@ const mapping = {
     ["Verification Hold", ledger.filter((row) => row.suppressions.some((reason) => /verification|unknown|catch|role/i.test(String(reason))))]
   ].map(([name, rows]) => ({ name, count: rows.length, emails: toEmails(rows) }))
 };
-const output = path.join(ledgerDir, "segment-map");
+const output = path.join(currentRoot, "segment-map");
 await mkdir(output, { recursive: true });
 await writeFile(path.join(output, "hubspot-to-resend-segment-map.json"), `${JSON.stringify(mapping, null, 2)}\n`, { mode: 0o600 });
 console.log(JSON.stringify({ output, segments: mapping.segments.map(({ name, count }) => ({ name, count })) }, null, 2));

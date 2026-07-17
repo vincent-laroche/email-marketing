@@ -1,9 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
-const dirs = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory() && entry.name.startsWith("ledger-")).map((entry) => entry.name).sort();
-if (!dirs.length) throw new Error("No ledger found");
-const ledgerDir = path.join(root, dirs.at(-1));
+const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data/current";
+const ledgerDir = path.join(root, "ledger");
 const ledger = JSON.parse(await readFile(path.join(ledgerDir, "canonical-ledger.json"), "utf8"));
 const duplicateEmails = ledger.length - new Set(ledger.map((record) => record.email)).size;
 const suppressedEligible = ledger.filter((record) => record.eligibility_status === "eligible" && record.suppression_reason);

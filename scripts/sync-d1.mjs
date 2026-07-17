@@ -24,7 +24,7 @@ for (const contact of ledger) {
   }
 }
 statements.push(`INSERT INTO sync_runs (id,operation,status,summary_json,created_at,completed_at) VALUES (${q(`ledger:${now}`)},'ledger-load','completed',${q(JSON.stringify({ ledgerDir, contacts: ledger.length }))},${q(now)},${q(now)});`);
-const outputDir = path.join(warehouseRoot, "d1-loads");
+const outputDir = path.join(warehouseRoot, "archive", "d1-loads");
 await mkdir(outputDir, { recursive: true });
 const sqlPath = path.join(outputDir, `ledger-${now.replace(/[:.]/g, "-")}.sql`);
 await writeFile(sqlPath, `${statements.join("\n")}\n`, { mode: 0o600 });

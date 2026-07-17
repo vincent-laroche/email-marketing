@@ -5,6 +5,7 @@ import { parse } from "csv-parse/sync";
 import { normalizeEmail, parseCount, sha256, strongestSuppression, latestTimestamp, valueForHeader } from "../src/ledger.mjs";
 
 const warehouse = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
+const current = path.join(warehouse, "current");
 const legacySources = [
   { name: "hubspot_4046266", portalId: "4046266", path: "/Users/vMac/07_warehouse/hubspot/outputs-20260612/exports/4046266/hubspot-crm-exports-all-contacts-4046266.csv" },
   { name: "hubspot_26557089", portalId: "26557089", path: "/Users/vMac/07_warehouse/hubspot/outputs-20260612/exports/26557089/hubspot-crm-exports-all-contacts-26557089.zip", zipEntry: "all-contacts.csv" },
@@ -15,17 +16,13 @@ const verificationSource = {
   path: "/Users/vMac/Downloads/150120_hubspot_1298_20260709221210_FULL_REPORT_MILLIONVERIFIER.COM.csv"
 };
 
-const snapshotDirs = (await readdir(warehouse, { withFileTypes: true }))
-  .filter((entry) => entry.isDirectory() && entry.name.startsWith("hubspot-50966981-"))
-  .map((entry) => entry.name)
-  .sort();
-if (!snapshotDirs.length) throw new Error("No HubSpot snapshot found. Run npm run snapshot:hubspot first.");
-const snapshotDir = path.join(warehouse, snapshotDirs.at(-1));
+const snapshotDir = path.join(current, "hubspot-snapshot");
+try { await access(path.join(snapshotDir, "manifest.json")); } catch { throw new Error("No current HubSpot snapshot found. Run npm run snapshot:hubspot first."); }
 const snapshotManifest = JSON.parse(await readFile(path.join(snapshotDir, "manifest.json"), "utf8"));
-const outputDir = path.join(warehouse, `ledger-${new Date().toISOString().replace(/[:.]/g, "-")}`);
+const outputDir = path.join(current, "ledger");
 await mkdir(outputDir, { recursive: true });
 
-const attestationPath = path.join(warehouse, "owner-attestation.json");
+const attestationPath = path.join(current, "owner-attestation.json");
 let attestation = null;
 try {
   await access(attestationPath);

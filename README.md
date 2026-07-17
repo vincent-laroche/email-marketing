@@ -2,6 +2,17 @@
 
 This package is the local implementation of the Hair Solutions Co. Resend migration. HubSpot snapshots and PII-bearing outputs live in `data/` inside this project and are never committed.
 
+## Working folders
+
+Use `data/current/` for the active working set:
+
+- `hubspot-snapshot/` — source capture
+- `ledger/` — canonical ledger, consent evidence, suppression master, and report
+- `free-import/` and `pro-import/` — current import manifests and CSVs
+- `free-ranking/` and `segment-map/` — selection evidence
+
+`data/archive/` contains previous rebuilds and temporary D1 load plans. `data/backups/` contains recovery copies. `data/audits/` contains read-only operational reports.
+
 ## Safe commands
 
 - `npm run access:preflight`

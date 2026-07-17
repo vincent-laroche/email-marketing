@@ -7,7 +7,7 @@ import { hubspotClient } from "../src/hubspot.mjs";
 const portalId = "50966981";
 const startedAt = new Date().toISOString();
 const stamp = startedAt.replace(/[:.]/g, "-");
-const root = `/Users/vMac/01_projects/Email Marketing/resend-takeover/data/hubspot-${portalId}-${stamp}`;
+const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data/current/hubspot-snapshot";
 const rawDir = path.join(root, "raw");
 const manifest = { portalId, startedAt, completedAt: null, sources: [], errors: [] };
 
