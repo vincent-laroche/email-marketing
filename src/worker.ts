@@ -14,7 +14,8 @@ function eventEmail(event: Record<string, unknown>) {
   const data = event.data as Record<string, unknown> | undefined;
   const to = data?.to;
   if (Array.isArray(to)) return typeof to[0] === "string" ? to[0].trim().toLowerCase() : null;
-  return typeof to === "string" ? to.trim().toLowerCase() : null;
+  if (typeof to === "string") return to.trim().toLowerCase();
+  return typeof data?.email === "string" ? data.email.trim().toLowerCase() : null;
 }
 
 async function processResendEvent(env: Env, event: Record<string, unknown>, rawPayload: string, signatureValid: boolean) {
@@ -26,7 +27,16 @@ async function processResendEvent(env: Env, event: Record<string, unknown>, rawP
   ).bind(providerEventId, eventType, now, signatureValid ? 1 : 0, rawPayload).run();
 
   const email = eventEmail(event);
-  const reason = eventType === "email.bounced" ? "hard_bounce" : eventType === "email.complained" ? "complaint" : eventType === "email.unsubscribed" ? "unsubscribe" : null;
+  const contactUnsubscribed = eventType === "contact.updated" && (event.data as Record<string, unknown> | undefined)?.unsubscribed === true;
+  const reason = eventType === "email.bounced"
+    ? "bounce"
+    : eventType === "email.complained"
+      ? "complaint"
+      : eventType === "email.suppressed"
+        ? "provider_suppression"
+        : contactUnsubscribed
+          ? "unsubscribe"
+          : null;
   if (email && reason) {
     await env.EMAIL_MARKETING_DB.prepare(
       "INSERT OR IGNORE INTO suppressions (id, email, reason, scope, source_system, observed_at, permanent, created_at) VALUES (?, ?, ?, 'global', 'Resend', ?, 1, ?)"

@@ -20,8 +20,8 @@
 
 ## Approval boundaries
 
-Cloudflare D1 creation, Worker deployment, Worker secrets, DNS changes, Resend imports, subscription updates, test sends, and broadcasts are production actions. Stage the exact change and obtain approval first.
+Resend imports, subscription updates, test sends, and broadcasts are production actions. Stage the exact change and obtain approval first.
 
 ## Sending-domain decision
 
-The DNS audit on 2026-07-17 found that `mail.hairsolutions.co` is a live HubSpot domain with HubSpot SPF and DKIM records. Leave it untouched. The staged Resend domain is `email.hairsolutions.co`; create its exact DNS manifest only after Resend supplies the verification records.
+Resend now verifies `mail.hairsolutions.co`, using its Cloudflare auto-configuration. The Resend DKIM and return-path records coexist with the earlier HubSpot CNAME/SPF records; the 2026-07-17 read-back confirmed the HubSpot records were not replaced. Keep HubSpot and Resend sending isolated operationally: all new continuity broadcasts use Resend, and do not attempt a HubSpot bulk send from this domain without re-auditing the DNS state.

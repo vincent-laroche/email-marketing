@@ -11,10 +11,11 @@ This package is the local implementation of the Hair Solutions Co. Resend migrat
 - `npm run rank:free`
 - `npm test`
 
-The Worker and D1 configuration is deliberately un-deployed. Creating D1, deploying the Worker, writing Worker secrets, changing DNS, importing Resend contacts, and sending email each require explicit approval.
+The Worker and D1 configuration is deployed. Contact imports, subscription updates, test sends, and broadcasts still require their own explicit approval.
 
 ## Current gates
 
-- Resend API access is not configured until `RESEND_API_KEY` is explicitly approved and added to the master environment.
+- `mail.hairsolutions.co` is verified in Resend; webhook delivery is configured for delivery, bounce, complaint, provider-suppression, and contact-unsubscribe changes.
+- No contacts have been imported and no email has been sent.
 - R2 is optional because the Cloudflare account has not enabled R2.
 - Shopify is a future-only source and is not part of historical migration or initial audience selection.

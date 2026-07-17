@@ -8,8 +8,8 @@
   "d1_databases": [
     {
       "binding": "EMAIL_MARKETING_DB",
-      "database_name": "REPLACE_AFTER_APPROVED_D1_CREATE",
-      "database_id": "REPLACE_AFTER_APPROVED_D1_CREATE"
+      "database_name": "email-marketing-control-plane",
+      "database_id": "e59cd8fa-7d36-47aa-954f-c7b5751129f2"
     }
   ]
 }
