@@ -10,6 +10,10 @@ const legacySources = [
   { name: "hubspot_26557089", portalId: "26557089", path: "/Users/vMac/07_warehouse/hubspot/outputs-20260612/exports/26557089/hubspot-crm-exports-all-contacts-26557089.zip", zipEntry: "all-contacts.csv" },
   { name: "hubspot_4046266_cleaned", portalId: "4046266", path: "/Users/vMac/07_warehouse/_warehouse_inbox/Contacts Engagement - Hubspot Contacts (Columns Cleaned) - hubspot 266f4e0d84e0806bb754c7a4e664043d_all.csv" }
 ];
+const verificationSource = {
+  name: "millionverifier_top500",
+  path: "/Users/vMac/Downloads/150120_hubspot_1298_20260709221210_FULL_REPORT_MILLIONVERIFIER.COM.csv"
+};
 
 const snapshotDirs = (await readdir(warehouse, { withFileTypes: true }))
   .filter((entry) => entry.isDirectory() && entry.name.startsWith("hubspot-50966981-"))
@@ -142,6 +146,28 @@ for (const source of legacySources) {
   }
   sourceSummary.push({ ...source, rowCount: rows.length, currentPortalMatches: matched });
 }
+
+const verificationRows = await readCsv(verificationSource);
+let verificationMatched = 0;
+const verificationCounts = { invalid_disposable: 0, verification_hold: 0 };
+for (const row of verificationRows) {
+  const email = normalizeEmail(valueForHeader(row, [/^email$/]));
+  if (!email) continue;
+  const record = upsert(email);
+  if (record.active_portal) verificationMatched += 1;
+  const result = String(valueForHeader(row, [/^result$/]) ?? "").trim().toLowerCase();
+  const quality = String(valueForHeader(row, [/^quality$/]) ?? "").trim().toLowerCase();
+  const role = /^(yes|true|1)$/i.test(String(valueForHeader(row, [/^role$/]) ?? "").trim());
+  if (result === "invalid" || quality === "bad") {
+    record.suppressions.push("invalid_disposable");
+    verificationCounts.invalid_disposable += 1;
+  } else if (result === "unknown" || /catch/.test(result) || role) {
+    record.suppressions.push("verification_hold");
+    verificationCounts.verification_hold += 1;
+  }
+  record.source_records.push({ source: verificationSource.name, portal_id: null, record_id: null });
+}
+sourceSummary.push({ ...verificationSource, rowCount: verificationRows.length, currentPortalMatches: verificationMatched, verificationCounts });
 
 const ledger = [...contacts.values()].map((record) => {
   const suppression_reason = strongestSuppression(record.suppressions);
