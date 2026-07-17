@@ -1,6 +1,6 @@
 import { readdir, mkdir, cp, writeFile } from "node:fs/promises";
 import path from "node:path";
-const root = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
 const backupRoot = path.join(root, "backups");
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
 const destination = path.join(backupRoot, stamp);

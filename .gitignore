@@ -1,4 +1,5 @@
 node_modules/
+.DS_Store
 .env
 .dev.vars
 .wrangler/
@@ -9,4 +10,3 @@ data/
 exports/
 out/
 *.csv
-../../../../07_warehouse/email_marketing/resend_takeover/

@@ -4,7 +4,7 @@ import AdmZip from "adm-zip";
 import { parse } from "csv-parse/sync";
 import { normalizeEmail, parseCount, sha256, strongestSuppression, latestTimestamp, valueForHeader } from "../src/ledger.mjs";
 
-const warehouse = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+const warehouse = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
 const legacySources = [
   { name: "hubspot_4046266", portalId: "4046266", path: "/Users/vMac/07_warehouse/hubspot/outputs-20260612/exports/4046266/hubspot-crm-exports-all-contacts-4046266.csv" },
   { name: "hubspot_26557089", portalId: "26557089", path: "/Users/vMac/07_warehouse/hubspot/outputs-20260612/exports/26557089/hubspot-crm-exports-all-contacts-26557089.zip", zipEntry: "all-contacts.csv" },

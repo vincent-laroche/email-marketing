@@ -1,6 +1,6 @@
 # Resend takeover control plane
 
-This package is the local implementation of the Hair Solutions Co. Resend migration. HubSpot snapshots and PII-bearing outputs live in `/Users/vMac/07_warehouse/email_marketing/resend_takeover/` and are never committed.
+This package is the local implementation of the Hair Solutions Co. Resend migration. HubSpot snapshots and PII-bearing outputs live in `data/` inside this project and are never committed.
 
 ## Safe commands
 

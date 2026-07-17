@@ -2,7 +2,7 @@
 
 Use this only if Vincent is truthfully attesting to current marketing permission. It is not a reconstruction of historical consent.
 
-Create `/Users/vMac/07_warehouse/email_marketing/resend_takeover/owner-attestation.json` only after Vincent explicitly approves its scope.
+Create `data/owner-attestation.json` only after Vincent explicitly approves its scope.
 
 ```json
 {

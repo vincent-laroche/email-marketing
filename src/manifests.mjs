@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-export const warehouseRoot = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+export const warehouseRoot = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
 
 export async function latestLedgerDir() {
   const dirs = (await readdir(warehouseRoot, { withFileTypes: true }))

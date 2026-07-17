@@ -2,7 +2,7 @@ import { readdir, readFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { sha256 } from "../src/ledger.mjs";
 
-const warehouse = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+const warehouse = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
 const dirs = (await readdir(warehouse, { withFileTypes: true })).filter((entry) => entry.isDirectory() && entry.name.startsWith("ledger-")).map((entry) => entry.name).sort();
 if (!dirs.length) throw new Error("No ledger found. Run npm run build:ledger first.");
 const ledgerDir = path.join(warehouse, dirs.at(-1));

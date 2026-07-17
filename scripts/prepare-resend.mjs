@@ -4,7 +4,7 @@ import { sha256 } from "../src/ledger.mjs";
 
 const mode = process.argv.find((argument) => argument.startsWith("--mode="))?.split("=")[1] ?? "free";
 if (!["free", "pro"].includes(mode)) throw new Error("Use --mode=free or --mode=pro");
-const root = "/Users/vMac/07_warehouse/email_marketing/resend_takeover";
+const root = "/Users/vMac/01_projects/Email Marketing/resend-takeover/data";
 const dirs = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory() && entry.name.startsWith("ledger-")).map((entry) => entry.name).sort();
 if (!dirs.length) throw new Error("No ledger found");
 const ledgerDir = path.join(root, dirs.at(-1));
