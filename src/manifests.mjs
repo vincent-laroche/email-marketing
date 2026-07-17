@@ -12,8 +12,12 @@ export async function latestLedgerDir() {
 
 export async function readManifest(id) {
   const ledgerDir = await latestLedgerDir();
-  for (const mode of ["free", "pro"]) {
-    const directory = path.join(currentRoot, `${mode}-import`);
+  for (const { mode, directoryName } of [
+    { mode: "free", directoryName: "free-import" },
+    { mode: "free-prospects", directoryName: "free-prospect-import" },
+    { mode: "pro", directoryName: "pro-import" }
+  ]) {
+    const directory = path.join(currentRoot, directoryName);
     try {
       const manifest = JSON.parse(await readFile(path.join(directory, "manifest.json"), "utf8"));
       if (manifest.id === id) return { ...manifest, directory, mode };

@@ -14,7 +14,7 @@ if (manifest.approvalStatus !== "pending") throw new Error(`Manifest ${manifest.
 const csv = await readManifestCsv(manifest);
 const rows = csv.trim().split("\n");
 if (rows.length - 1 !== manifest.audienceCount) throw new Error("CSV count differs from immutable manifest.");
-const cap = manifest.mode === "free" ? 1000 : 5000;
+const cap = manifest.mode === "free" || manifest.mode === "free-prospects" ? 1000 : 5000;
 if (manifest.audienceCount > cap) throw new Error(`Manifest exceeds ${manifest.mode} contact cap.`);
 
 const properties = [
@@ -23,7 +23,9 @@ const properties = [
 ];
 const segmentNames = manifest.mode === "free"
   ? ["Free Continuity — Top 1000", "All Marketing Eligible"]
-  : ["All Marketing Eligible"];
+  : manifest.mode === "free-prospects"
+    ? ["Free Continuity — Non-Customer 1000", "All Marketing Eligible"]
+    : ["All Marketing Eligible"];
 const topicId = "9d63a3fe-13bc-4bae-acb0-94beb751f36d";
 
 if (dryRun) {
