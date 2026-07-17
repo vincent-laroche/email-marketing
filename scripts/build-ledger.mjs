@@ -52,6 +52,8 @@ function makeRecord(email) {
     last_name: null,
     lifecycle_stage: null,
     customer_status: null,
+    customer_purchase_profile: null,
+    has_active_subscription: null,
     source_portals: new Set(),
     source_records: [],
     engagement: { delivered: 0, opened: 0, clicked: 0, replied: 0, form_submissions: 0, pageviews: 0, sessions: 0, last_seen_at: null, last_open_at: null, last_click_at: null },
@@ -88,6 +90,8 @@ for (const contact of rawContacts) {
   record.last_name ??= properties.lastname || null;
   record.lifecycle_stage ??= properties.lifecyclestage || null;
   record.customer_status ??= properties.hs_lead_status || properties.customer_status || null;
+  record.customer_purchase_profile ??= properties.customer_purchase_profile || null;
+  record.has_active_subscription ??= properties.hs_has_active_subscription || null;
   const attestedEmails = new Set((attestation?.emails ?? []).map(normalizeEmail).filter(Boolean));
   const wholeCurrentScope = attestation?.scope === "all_current_active_hubspot_contacts";
   if (wholeCurrentScope || attestedEmails.has(email)) {
@@ -113,6 +117,7 @@ for (const contact of rawContacts) {
   record.engagement.last_click_at = latestTimestamp(record.engagement.last_click_at, valueForHeader(properties, [/last.*click/]));
   if (String(properties.hs_email_communication_subscriptions_opted_out || "").trim()) record.suppressions.push("unsubscribe");
   if (/true|yes|1/i.test(String(properties.hs_email_bad_address || properties.hs_email_is_ineligible || ""))) record.suppressions.push("hard_bounce");
+  if (String(properties.hs_has_active_subscription ?? "").trim() === "1" || /plan_customer/i.test(String(properties.customer_purchase_profile ?? ""))) record.suppressions.push("plan_customer_hold");
 }
 
 const sourceSummary = [];
