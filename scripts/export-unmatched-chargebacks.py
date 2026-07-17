@@ -98,6 +98,28 @@ with open("/Users/vMac/Downloads/unified_payments.csv", newline="", encoding="ut
             })
 
 unmatched = [row for row in source_rows if not current_match(row["source_customer_email"], row["source_customer_name"]) and not historic_match(row["source_customer_email"], row["source_customer_name"])]
+chargeback_ids = {str(row["source_row"].get("charge_id_or_payment_id") or "") for row in unmatched}
+enrichment_specs = [
+    ("stripe_transactions_itemized", "/Users/vMac/Downloads/Stripe Transactions.xlsx", "itemized_balance_change_from_ac", ("charge_id",)),
+    ("stripe_charges_master", "/Users/vMac/Downloads/Stripe Charges Masterfile.xlsx", "Stripe Charges 22af4e0d84e08025", ("Charge ID",)),
+    ("stripe_charges_payout_reconciliation", "/Users/vMac/Downloads/Stripe Charges Masterfile.xlsx", "itemized_payout_reconciliation_", ("charge_id", "payment_intent_id")),
+    ("stripe_charges_balance_detail", "/Users/vMac/Downloads/Stripe Charges Masterfile.xlsx", "Sheet2", ("charge_id", "payment_intent_id"))
+]
+enrichment_maps = {}
+enrichment_columns = []
+for prefix, workbook_path, sheet_name, key_columns in enrichment_specs:
+    workbook = load_workbook(workbook_path, read_only=True, data_only=True)
+    sheet = workbook[sheet_name]
+    columns = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
+    enrichment_columns.extend([f"{prefix}__{column}" for column in columns if column])
+    matched_rows = {}
+    for values in sheet.iter_rows(min_row=2, values_only=True):
+        raw = dict(zip(columns, values))
+        for key_column in key_columns:
+            key = str(raw.get(key_column) or "")
+            if key in chargeback_ids and key not in matched_rows:
+                matched_rows[key] = raw
+    enrichment_maps[prefix] = (columns, matched_rows)
 all_source_columns = []
 for row in source_rows:
     for column in row["source_row"]:
@@ -106,16 +128,23 @@ for row in source_rows:
 for row in unmatched:
     row["hubspot_match_result"] = "no match in current portal or historic exports after email, aliases, normalized-name, and fuzzy-name checks"
 OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-headers = ["source_document", "source_customer_name", "source_customer_email", "hubspot_match_result", *all_source_columns]
+headers = ["source_document", "source_customer_name", "source_customer_email", "hubspot_match_result", *all_source_columns, *enrichment_columns]
 with OUTPUT.open("w", newline="", encoding="utf-8") as handle:
     writer = csv.DictWriter(handle, fieldnames=headers)
     writer.writeheader()
     for row in unmatched:
-        writer.writerow({
+        output = {
             "source_document": row["source_document"],
             "source_customer_name": row["source_customer_name"],
             "source_customer_email": row["source_customer_email"],
             "hubspot_match_result": row["hubspot_match_result"],
             **row["source_row"]
-        })
+        }
+        chargeback_id = str(row["source_row"].get("charge_id_or_payment_id") or "")
+        for prefix, (columns, matches) in enrichment_maps.items():
+            source = matches.get(chargeback_id, {})
+            for column in columns:
+                if column:
+                    output[f"{prefix}__{column}"] = source.get(column, "")
+        writer.writerow(output)
 print(json.dumps({"output": str(OUTPUT), "unmatched_payment_rows": len(unmatched)}))
