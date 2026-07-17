@@ -21,6 +21,7 @@
     "audit:recurring-plan-patterns": "node scripts/audit-recurring-plan-patterns.mjs",
     "stage:legacy-plan-customers": "node scripts/stage-legacy-plan-customers.mjs",
     "apply:legacy-plan-customers": "node scripts/apply-legacy-plan-customer-updates.mjs",
+    "sync:plan-customer-suppression": "node scripts/sync-plan-customer-suppression-list.mjs",
     "security:scan": "node scripts/security-scan.mjs",
     "backup:local": "node scripts/backup-local.mjs",
     "audit:dns": "node scripts/audit-dns.mjs",
