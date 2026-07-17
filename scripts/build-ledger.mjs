@@ -118,6 +118,7 @@ for (const contact of rawContacts) {
   if (String(properties.hs_email_communication_subscriptions_opted_out || "").trim()) record.suppressions.push("unsubscribe");
   if (/true|yes|1/i.test(String(properties.hs_email_bad_address || properties.hs_email_is_ineligible || ""))) record.suppressions.push("hard_bounce");
   if (String(properties.hs_has_active_subscription ?? "").trim() === "1" || /plan_customer/i.test(String(properties.customer_purchase_profile ?? ""))) record.suppressions.push("plan_customer_hold");
+  if (String(properties.customer_situation ?? "").split(";").includes("Chargeback")) record.suppressions.push("chargeback_hold");
 }
 
 const sourceSummary = [];

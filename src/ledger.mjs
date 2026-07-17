@@ -15,6 +15,7 @@ export const suppressionPriority = [
   "hard_bounce",
   "invalid_disposable",
   "manual_do_not_contact",
+  "chargeback_hold",
   "plan_customer_hold",
   "verification_hold"
 ];
