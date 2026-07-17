@@ -17,9 +17,9 @@ if (selected.some((record) => record.suppression_reason || !record.active_portal
 if (selected.length > cap) throw new Error(`Contact cap exceeded for ${mode}`);
 const destination = path.join(root, `${mode}-import`);
 await mkdir(destination, { recursive: true });
-const headers = ["email", "first_name", "last_name", "customer_status", "customer_tier", "lifecycle_stage", "engagement_tier", "last_meaningful_activity", "source_portals", "consent_evidence_quality", "migration_cohort"];
+const headers = ["email", "first_name", "last_name", "customer_status", "customer_tier", "lifecycle_stage", "engagement_tier", "last_meaningful_activity", "source_portals", "consent_evidence_quality", "migration_cohort", "selection_reasoning"];
 const escape = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
-const rows = selected.map((record) => [record.email, record.first_name, record.last_name, record.customer_status, null, record.lifecycle_stage, record.engagement_tier, record.engagement.last_click_at || record.engagement.last_open_at || record.engagement.last_seen_at, record.source_portals.join(";"), record.consent.evidence_quality, mode].map(escape).join(","));
+const rows = selected.map((record) => [record.email, record.first_name, record.last_name, record.customer_status, null, record.lifecycle_stage, record.engagement_tier, record.engagement.last_click_at || record.engagement.last_open_at || record.engagement.last_seen_at, record.source_portals.join(";"), record.consent.evidence_quality, mode, record.selection_reasoning ?? (mode === "free" ? "Eligible continuity cohort selected by ranking." : "Eligible continuity cohort.")].map(escape).join(","));
 const csv = `${headers.join(",")}\n${rows.join("\n")}\n`;
 const manifest = { id: `resend-${mode}-${new Date().toISOString().replace(/[:.]/g, "-")}`, mode, sourceLedger: ledgerDir, rankingSource: mode === "free" ? rankingPath : null, audienceCount: selected.length, audienceHash: sha256(selected.map((record) => record.email)), csvSha256: sha256(csv), approvalStatus: "pending", createdAt: new Date().toISOString() };
 await writeFile(path.join(destination, "import.csv"), csv, { mode: 0o600 });
