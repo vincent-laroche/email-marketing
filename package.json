@@ -12,6 +12,7 @@
     "build:segment-map": "node scripts/build-segment-map.mjs",
     "prepare:resend": "node scripts/prepare-resend.mjs",
     "sync:resend": "node scripts/sync-resend.mjs",
+    "sync:hubspot-template-drafts": "node scripts/sync-hubspot-template-drafts.mjs",
     "sync:d1": "node scripts/sync-d1.mjs",
     "reconcile:resend": "node scripts/reconcile-resend.mjs",
     "campaign:preflight": "node scripts/campaign-preflight.mjs",

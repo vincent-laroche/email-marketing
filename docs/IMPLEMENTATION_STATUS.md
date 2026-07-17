@@ -7,19 +7,23 @@
 - Local migration evidence: immutable HubSpot snapshot, canonical ledger, exclusion/consent ledgers, and Free/Pro import packages exist in the private warehouse.
 - Version control: PII and secrets are excluded from the private source repository.
 
-## Implemented but intentionally unapplied
+## Implemented and applied
 
-- `sync:d1 --apply` would load the 4,290-contact ledger into D1 idempotently; its dry run is verified.
-- `sync:resend --apply --manifest <id>` would create ordinary properties/segments and upsert an immutable CSV with the Marketing updates topic.
-- Seed and external broadcast commands are deliberately fail-closed until an exact content file, internal seeds, and per-manifest send approval exist.
+- D1 has the 4,290-contact canonical ledger, 4,290 consent-evidence records, and 655 suppression records. The Worker health endpoint is live.
+- The approved non-customer Free manifest `resend-free-prospects-2026-07-17T08-16-44-687Z` completed Resend import `c8424560-ff43-4b54-b47e-1903540cf79f`: 1,000 created, zero failed/skipped. Contacts are in **Free Continuity — Non-Customer 1000** and **All Marketing Eligible**, opted in to the Marketing updates topic.
+- 92 HubSpot source emails with extractable HTML are stored in Resend as unpublished draft templates. Their HubSpot IDs are preserved as `hubspot-<id>` aliases. No template has a default sender, no template is published, and no template can send by itself.
+
+## Implemented but deliberately gated
+
+- Seed and external broadcast commands remain fail-closed until an exact content file, internal seed recipients, and per-campaign approval are recorded.
 
 ## Not yet complete
 
-- First Free contact import and topic-subscription mutation.
-- D1 production PII load and import reconciliation.
-- Full static segment population after import; segment creation alone is insufficient.
 - Seed test, reply-to test, preference test, and controlled reputation ramp.
-- Pro expansion, which must wait until the Resend account is on a plan that supports the 2,418 eligible contacts.
+- Pro expansion, which must wait until the Resend account is on a plan that supports the larger eligible cohort.
+- An approved sender identity and monitored reply-to inbox for outbound messages. This cannot be inferred from the sending subdomain.
+- Shopify/application event production for event-driven journeys. Resend Automations require explicit events; it cannot execute HubSpot property/list enrollment criteria directly.
+- Review/rebuild of 17 source emails held from automatic migration: two are explicitly test/do-not-reuse and 15 have no extractable HTML body in the HubSpot API snapshot.
 
 ## Completion rule
 
