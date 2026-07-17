@@ -8,6 +8,7 @@
     "snapshot:hubspot": "node scripts/snapshot-hubspot.mjs",
     "build:ledger": "node scripts/build-ledger.mjs",
     "rank:free": "node scripts/rank-free.mjs",
+    "rank:free-prospects": "node scripts/rank-free-prospects.mjs",
     "build:segment-map": "node scripts/build-segment-map.mjs",
     "prepare:resend": "node scripts/prepare-resend.mjs",
     "sync:resend": "node scripts/sync-resend.mjs",
